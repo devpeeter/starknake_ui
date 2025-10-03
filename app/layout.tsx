@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import '../public/css/reset.css';
+import '../public/css/main.css';
+import '../public/css/orientation_utils.css';
+import '../public/css/ios_fullscreen.css';
 
 export const metadata: Metadata = {
   title: 'SNAKE ATTACK',

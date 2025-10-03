@@ -1,2 +1,7 @@
 node_modules/
 .env
+.idea
+.next
+.vscode/
+.DS_Store
+*.log

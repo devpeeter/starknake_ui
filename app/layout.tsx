@@ -19,10 +19,6 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,minimal-ui" />
         <meta name="msapplication-tap-highlight" content="no"/>
-        <link rel="stylesheet" href="/css/reset.css" />
-        <link rel="stylesheet" href="/css/main.css" />
-        <link rel="stylesheet" href="/css/orientation_utils.css" />
-        <link rel="stylesheet" href="/css/ios_fullscreen.css" />
       </head>
       <body>{children}</body>
     </html>

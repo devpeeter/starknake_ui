@@ -9,6 +9,19 @@ export default function Game() {
   useEffect(() => {
     if (scriptsLoadedRef.current) return;
 
+    const loadCSS = (href: string) => {
+      if (document.querySelector(`link[href="${href}"]`)) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      document.head.appendChild(link);
+    };
+
+    loadCSS('/css/reset.css');
+    loadCSS('/css/main.css');
+    loadCSS('/css/orientation_utils.css');
+    loadCSS('/css/ios_fullscreen.css');
+
     const loadScript = (src: string): Promise<void> => {
       return new Promise((resolve, reject) => {
         if (document.querySelector(`script[src="${src}"]`)) {

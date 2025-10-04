@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -7,6 +7,17 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  other: {
+    'msapplication-tap-highlight': 'no',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+  minimumScale: 1.0,
+  maximumScale: 1.0,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -16,10 +27,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,minimal-ui" />
-        <meta name="msapplication-tap-highlight" content="no"/>
-      </head>
       <body>{children}</body>
     </html>
   );

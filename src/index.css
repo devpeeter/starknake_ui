@@ -1,0 +1,264 @@
+/* Basic styles to ensure visibility */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.app-container,
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.debug-text {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.landing-page,
+.dashboard,
+.game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #1a1a1a;
+}
+
+.landing-container,
+.dashboard-container {
+  max-width: 800px;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.logo-section,
+.dashboard-header {
+  margin-bottom: 20px;
+}
+
+.game-logo,
+.dashboard-logo {
+  max-height: 100px;
+}
+
+.game-title {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.game-subtitle {
+  font-size: 24px;
+  color: #cccccc;
+}
+
+.connect-section {
+  margin: 20px 0;
+}
+
+.connect-wallet-btn,
+.disconnect-btn,
+.play-game-btn,
+.edit-btn,
+.update-btn,
+.copy-btn,
+.back-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.connect-wallet-btn:hover,
+.disconnect-btn:hover,
+.play-game-btn:hover,
+.edit-btn:hover,
+.update-btn:hover,
+.copy-btn:hover,
+.back-btn:hover {
+  background-color: #0056b3;
+}
+
+.connect-wallet-btn:disabled {
+  background-color: #666666;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #ff4444;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.game-preview {
+  margin-top: 20px;
+}
+
+.preview-image {
+  max-width: 100%;
+  border-radius: 10px;
+}
+
+.player-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.info-card {
+  background-color: #333333;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.username-section,
+.address-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.username,
+.address,
+.score,
+.position {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.username-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.username-input {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #444444;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+}
+
+.play-section {
+  margin-top: 20px;
+}
+
+.play-icon {
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1360px;
+  padding: 20px;
+}
+
+.game-player-info {
+  display: flex;
+  gap: 20px;
+}
+
+.game-username,
+.game-score {
+  font-size: 16px;
+}
+
+.ani_hack {
+  display: block;
+  width: 100%;
+  max-width: 1360px;
+  height: auto;
+  aspect-ratio: 1360 / 768;
+  border: 2px solid #ffffff; /* Debug border to confirm visibility */
+  margin: 0 auto;
+}
+
+.check-fonts {
+  display: none; /* Hide font check unless needed */
+}
+
+.orientation-msg-container {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.orientation-msg-text {
+  font-size: 18px;
+  color: #ff4444;
+}
+
+@media (orientation: landscape) {
+  .orientation-msg-container {
+    display: none;
+  }
+}
+
+@media (orientation: portrait) {
+  .orientation-msg-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+  }
+  .orientation-msg-text {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.game-loading,
+.game-error {
+  text-align: center;
+  padding: 40px;
+  background-color: #333333;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+.game-loading p,
+.game-error p {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.retry-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-btn:hover {
+  background-color: #0056b3;
+}

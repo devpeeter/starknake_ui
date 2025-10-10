@@ -1,0 +1,31 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.9",
+    "vite-plugin-mkcert": "^1.17.5"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.26.2",
+    "@starknet-react/chains": "^5.0.1",
+    "@starknet-react/core": "^5.0.1",
+    "@cartridge/controller": "^0.10.7",
+    "@cartridge/connector": "^0.10.3",
+    "axios": "^1.12.2",
+    "starknet": "^7.6.4",
+    "starknetkit": "1.1.9"
+  }
+}

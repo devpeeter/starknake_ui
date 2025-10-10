@@ -77,6 +77,10 @@ function CEndPanel(oSpriteBg) {
 
         createjs.Tween.get(_oGroup, {ignoreGlobalPause: true}).to({alpha: 1}, 1000, createjs.Ease.cubicOut);
 
+        if (typeof window.submitGameScore === 'function') {
+            window.submitGameScore(iScore);
+        }
+
         $(s_oMain).trigger("save_score", iScore);
         $(s_oMain).trigger("share_event", iScore);
     };

@@ -1,11 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { createClient } from '@supabase/supabase-js'
 
 function Dashboard({ playerDetails, address, connectWallet, updateUsername, loading, error }) {
   const navigate = useNavigate()
   const [newUsername, setNewUsername] = useState("")
   const [showUsernameForm, setShowUsernameForm] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [scoreStats, setScoreStats] = useState(null)
+  const [recentGames, setRecentGames] = useState([])
+  const [statsLoading, setStatsLoading] = useState(true)
+
+  const supabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY
+  )
 
   const handlePlayGame = () => {
     navigate('/game')
@@ -27,6 +36,52 @@ function Dashboard({ playerDetails, address, connectWallet, updateUsername, load
       } catch (err) {
         console.error("Failed to copy:", err)
       }
+    }
+  }
+
+  useEffect(() => {
+    if (address) {
+      fetchScoreStats()
+    }
+  }, [address])
+
+  const fetchScoreStats = async () => {
+    try {
+      setStatsLoading(true)
+
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('wallet_address', address)
+        .maybeSingle()
+
+      if (userError) throw userError
+
+      if (userData) {
+        setScoreStats({
+          totalScore: userData.total_accumulated_score || 0,
+          gamesPlayed: userData.games_played || 0,
+          highestScore: userData.highest_score || 0,
+          averageScore: userData.games_played > 0
+            ? Math.round(userData.total_accumulated_score / userData.games_played)
+            : 0
+        })
+      }
+
+      const { data: gamesData, error: gamesError } = await supabase
+        .from('game_scores')
+        .select('*')
+        .eq('wallet_address', address)
+        .order('played_at', { ascending: false })
+        .limit(5)
+
+      if (gamesError) throw gamesError
+
+      setRecentGames(gamesData || [])
+    } catch (err) {
+      console.error('Failed to fetch score stats:', err)
+    } finally {
+      setStatsLoading(false)
     }
   }
 
@@ -91,6 +146,51 @@ function Dashboard({ playerDetails, address, connectWallet, updateUsername, load
               <h3>Leaderboard Position</h3>
               <p className="position">#{playerDetails.position}</p>
             </div>
+          </div>
+        )}
+
+        {statsLoading ? (
+          <div className="stats-loading">
+            <p>Loading score statistics...</p>
+          </div>
+        ) : scoreStats && (
+          <div className="score-stats">
+            <h2>Score Statistics</h2>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <h3>Total Accumulated Score</h3>
+                <p className="stat-value">{scoreStats.totalScore.toLocaleString()}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Games Played</h3>
+                <p className="stat-value">{scoreStats.gamesPlayed}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Average Score</h3>
+                <p className="stat-value">{scoreStats.averageScore.toLocaleString()}</p>
+              </div>
+            </div>
+
+            {recentGames.length > 0 && (
+              <div className="recent-games">
+                <h3>Recent Games</h3>
+                <div className="games-list">
+                  {recentGames.map((game) => (
+                    <div key={game.id} className="game-item">
+                      <span className="game-score">{game.score}</span>
+                      <span className="game-date">
+                        {new Date(game.played_at).toLocaleDateString()} {new Date(game.played_at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {playerDetails && (
+          <div className="hidden-section">
           </div>
         )}
 

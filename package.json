@@ -16,10 +16,11 @@
     "vite": "^7.1.9"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
+    "axios": "^1.12.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.26.2",
-    "axios": "^1.12.2",
     "starknet": "^6.7.0",
     "starknetkit": "1.1.9"
   }

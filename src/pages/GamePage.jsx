@@ -334,6 +334,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { submitGameScore } from "../gameScoreService";
 
 function GamePage({ playerDetails }) {
   const navigate = useNavigate();
@@ -428,6 +429,19 @@ function GamePage({ playerDetails }) {
 
       try {
         console.log("Starting game initialization...");
+
+        window.submitGameScore = async (score) => {
+          if (playerDetails && playerDetails.walletAddress) {
+            console.log("Submitting score:", score);
+            const result = await submitGameScore(playerDetails.walletAddress, score);
+            if (result.success) {
+              console.log("Score submitted successfully:", result.data);
+            } else {
+              console.error("Failed to submit score:", result.error);
+            }
+          }
+        };
+
         const oMain = new window.CMain({
           hero_rotation_speed: 10,
           hero_speed_up: 15,

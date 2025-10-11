@@ -11,6 +11,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import GamePage from "./pages/GamePage";
 import { contractABI } from "./abi";
+import { supabase } from "./supabaseClient";
 
 function App() {
   const [provider, setProvider] = useState(null);
@@ -85,24 +86,56 @@ function App() {
         setAddress(wallet.selectedAddress);
 
         try {
-          console.log("Sending wallet address:", wallet.selectedAddress);
-          const response = await fetch(`${backendUrl}/create_user`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ wallet_address: wallet.selectedAddress }),
-          });
+          console.log("Checking/creating user in Supabase:", wallet.selectedAddress);
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(
-              `Failed to fetch user data: ${errorData.error || "Unknown error"}`
-            );
+          const { data: existingUser, error: fetchError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('wallet_address', wallet.selectedAddress)
+            .maybeSingle();
+
+          if (fetchError && fetchError.code !== 'PGRST116') {
+            throw fetchError;
           }
 
-          const data = await response.json();
-          console.log("Backend response:", data);
+          let data;
+          if (existingUser) {
+            console.log("Existing user found:", existingUser);
+            data = {
+              status: "Existing",
+              username: existingUser.username,
+              position: 0,
+              address: existingUser.wallet_address,
+              highest_score: existingUser.highest_score
+            };
+          } else {
+            console.log("Creating new user");
+            const newUsername = `player_${wallet.selectedAddress.slice(2, 10)}`;
+
+            const { data: newUser, error: insertError } = await supabase
+              .from('users')
+              .insert({
+                wallet_address: wallet.selectedAddress,
+                username: newUsername,
+                highest_score: 0,
+                total_accumulated_score: 0,
+                games_played: 0
+              })
+              .select()
+              .single();
+
+            if (insertError) throw insertError;
+
+            data = {
+              status: "New",
+              username: newUser.username,
+              position: 0,
+              address: newUser.wallet_address,
+              highest_score: newUser.highest_score
+            };
+          }
+
+          console.log("User data:", data);
           console.log("Status response:", data.status);
 
           if (data.status === "New") {
@@ -131,24 +164,13 @@ function App() {
             } catch (contractError) {
               console.error("Contract call failed:", contractError);
 
-              //call the backend to delete the user since contract call failed
-              const response = await fetch(`${backendUrl}/delete_user`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  wallet_address: wallet.selectedAddress,
-                }),
-              });
+              const { error: deleteError } = await supabase
+                .from('users')
+                .delete()
+                .eq('wallet_address', wallet.selectedAddress);
 
-              if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(
-                  `Failed to delete user data from database: ${
-                    errorData.error || "Unknown error"
-                  }`
-                );
+              if (deleteError) {
+                console.error("Failed to delete user:", deleteError);
               }
 
               throw new Error(
@@ -167,11 +189,10 @@ function App() {
           });
           console.log(`Connected: ${wallet.selectedAddress.slice(0, 10)}...`);
         } catch (fetchError) {
-          console.warn("Backend sync failed, using local data:", fetchError);
+          console.warn("User sync failed, using fallback:", fetchError);
 
-          //THIS WILL BE REMOVED LATER, ONLY HERE BECAUSE OF BOLT
           setPlayerDetails({
-            username: `user_${wallet.selectedAddress.slice(2, 10)}`,
+            username: `player_${wallet.selectedAddress.slice(2, 10)}`,
             position: 0,
             walletAddress: wallet.selectedAddress,
             score: "0",
@@ -258,27 +279,19 @@ function App() {
     setUpdateLoading(true);
     setError(null);
     try {
-      // Step 1: Check username availability and fetch user
-      const checkResponse = await fetch(`${backendUrl}/check_user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          wallet_address: address,
-          username: newUsername,
-        }),
-      });
+      const { data: userData, error: fetchError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('wallet_address', address)
+        .maybeSingle();
 
-      if (!checkResponse.ok) {
-        const errorData = await checkResponse.json();
-        throw new Error(
-          `Failed to check user: ${errorData.error || "Unknown error"}`
-        );
+      if (fetchError) throw fetchError;
+
+      if (!userData) {
+        throw new Error("User not found");
       }
 
-      const userData = await checkResponse.json();
-      console.log("Check user response:", userData);
+      console.log("User data:", userData);
 
       // Step 2: Check if updated is false and call contract if true
       if (userData.updated === false) {
@@ -309,32 +322,24 @@ function App() {
         console.log("User already updated, skipping contract call");
       }
 
-      // Step 3: Update username in backend
-      const updateResponse = await fetch(`${backendUrl}/update_user`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          wallet_address: address,
-          new_username: newUsername,
-        }),
-      });
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update({
+          username: newUsername,
+          updated_at: new Date().toISOString()
+        })
+        .eq('wallet_address', address)
+        .select()
+        .single();
 
-      if (!updateResponse.ok) {
-        const errorData = await updateResponse.json();
-        throw new Error(
-          `Failed to update username: ${errorData.error || "Unknown error"}`
-        );
-      }
+      if (updateError) throw updateError;
 
-      const updateData = await updateResponse.json();
-      console.log("Update response:", updateData);
+      console.log("Username updated:", updatedUser);
       setPlayerDetails({
-        username: updateData.username,
-        position: updateData.position,
-        walletAddress: updateData.address,
-        score: updateData.highest_score.toString(),
+        username: updatedUser.username,
+        position: 0,
+        walletAddress: updatedUser.wallet_address,
+        score: updatedUser.highest_score.toString(),
       });
     } catch (error) {
       const message = error.message || "Unknown error";

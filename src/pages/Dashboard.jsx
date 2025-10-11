@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../supabaseClient'
 
 function Dashboard({ playerDetails, address, connectWallet, updateUsername, loading, error }) {
   const navigate = useNavigate()
@@ -10,11 +10,6 @@ function Dashboard({ playerDetails, address, connectWallet, updateUsername, load
   const [scoreStats, setScoreStats] = useState(null)
   const [recentGames, setRecentGames] = useState([])
   const [statsLoading, setStatsLoading] = useState(true)
-
-  const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-  )
 
   const handlePlayGame = () => {
     navigate('/game')
